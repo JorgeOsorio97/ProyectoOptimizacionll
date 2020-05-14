@@ -1,10 +1,12 @@
 import numpy as np
 import pandas as pd
 import itertools
-from typing import Tuple
+from typing import Tuple, List
 from enum import Enum, unique
 
-# Utilitary functions
+# UTILIDADES
+
+# Funciones utilitarias
 
 
 def input_int(message):
@@ -14,11 +16,24 @@ def input_int(message):
 def try_again():
     input_int("")
 
+# Enumeraciones
+
 
 @unique
 class Artificial(Enum):
     ORIGENES = 1
     DESTINOS = 2
+
+
+@unique
+class Objetivo(Enum):
+    MAXIMIZAR = 1
+    MINIMIZAR = 2
+
+
+# Tipos
+
+Ruta = List[Tuple[int]]
 
 
 class Transporte():
@@ -182,7 +197,6 @@ class Transporte():
         ofertas = self.oferta_origenes
         demandas = self.demanda_destinos
         transbordos = self.num_transbordos
-        print(ofertas, demandas, transbordos)
         sobrante_oferta = ofertas.sum()
         origen_idx = 0
         destino_idx = 0
@@ -360,20 +374,68 @@ class Transporte():
                     self.v[col] = self.mat_costo[fila][col] - self.u[fila]
                 elif self.v[col]:
                     self.u[fila] = self.mat_costo[fila][col] - self.v[col]
-        import pdb
         self.mat_sombra = np.zeros(
             (len(self.u), len(self.v)))
         not_base = np.where(np.logical_not(self.mat_base))
         for i in np.arange(len(not_base[0])):
             fila = not_base[0][i]
             col = not_base[1][i]
-            print(self.u[fila])
-            print(self.v[col])
-            pdb.set_trace()
             self.mat_sombra[fila][col] = self.u[fila] + \
                 self.v[col] - self.mat_costo[fila][col]
 
         return(self.mat_sombra)
+
+    def encontrar_poligono(self):
+        max_sombra = self.mat_sombra.max()
+        pivote = (np.where(self.mat_sombra == max_sombra)[
+                  0][0], np.where(self.mat_sombra == max_sombra)[1][0])
+
+        route = [pivote]
+
+        def look_col(mat_base: np.ndarray, route: Ruta) -> Tuple[bool, List]:
+            import pdb
+            pdb.set_trace()
+            base = mat_base.copy()
+            base[route[-1][0]][route[-1][1]] = False
+
+            col = route[-1][1]
+
+            posible_options = np.where(base[:, col])
+            for i in np.arange(len(posible_options[0])):
+                fila = posible_options[0][i]
+                if (fila, col) in route:
+                    if (fila, col) == route[0]:
+                        return True, route
+                    return False, route
+                else:
+                    return False, route.append((fila, col))
+            return False, route
+
+        def look_row(mat_base: np.ndarray, route: Ruta) -> Tuple[bool, Ruta]:
+            import pdb
+            pdb.set_trace()
+            base = mat_base.copy()
+            base[route[-1][0]][route[-1][1]] = False
+            posible_options = np.where(base[route[-1][0], :])
+            for i in np.arange(len(posible_options[0])):
+                fila = posible_options[0][i]
+                col = posible_options[1][i]
+                if (fila, col) in route:
+                    if (fila, col) == route[0]:
+                        return True, route
+                    return False, route
+                else:
+                    return False, route.append((fila, col))
+            return False, route
+        counter = 0
+        while True and counter < 50:
+            valid, route = look_col(self.mat_base, route)
+            if(valid):
+                return route
+            valid, route = look_row(self.mat_base, route)
+            if(valid):
+                return route
+            counter += 1
 
     def solve(self) -> None:
         self.solicitar_datos()
@@ -384,4 +446,5 @@ if __name__ == "__main__":
     transporte = Transporte()
     transporte.test_data(1)
     transporte.costo_minimo()
-    print(transporte.costos_sombra())
+    transporte.costos_sombra()
+    print(transporte.encontrar_poligono())
