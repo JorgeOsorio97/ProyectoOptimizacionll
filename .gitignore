@@ -62,3 +62,6 @@ scratch/
 
 # Misc
 .DS_Store
+
+# IDE's
+.vscode/
