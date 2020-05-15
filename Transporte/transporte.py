@@ -1,15 +1,15 @@
-import numpy as np
-import pandas as pd
+# Std library
 import itertools
 from typing import Tuple, List
 from enum import Enum, unique
 
-import pdb
+import numpy as np
+import pandas as pd
+
 
 # UTILIDADES
 
 # Funciones utilitarias
-
 
 def input_int(message):
     return int(input(message))
