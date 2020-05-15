@@ -4,6 +4,8 @@ import itertools
 from typing import Tuple, List
 from enum import Enum, unique
 
+import pdb
+
 # UTILIDADES
 
 # Funciones utilitarias
@@ -32,13 +34,14 @@ class Objetivo(Enum):
 
 
 # Tipos
-
-Ruta = List[Tuple[int]]
+Coord = Tuple[int, int]
+Ruta = List[Coord]
 
 
 class Transporte():
 
     # Varibles ingresadas
+    obj: Objetivo = 0
     oferta_origenes = []
     demanda_destinos = []
     num_origenes = 0
@@ -49,12 +52,13 @@ class Transporte():
 
     # Variables calculadas
     mat_base = []
-    artificial = 0
+    artificial: Artificial = 0
     mat_sombra = []
     u = []
     v = []
 
     def inicializar_variables(self) -> None:
+        self.obj = 0
         self.oferta_origenes = []
         self.demanda_destinos = []
         self.num_origenes = 0
@@ -68,6 +72,21 @@ class Transporte():
         self.u = []
         self.v = []
 
+    def print_all_data(self) -> None:
+        print(self.obj)
+        print(self.oferta_origenes)
+        print(self.demanda_destinos)
+        print(self.num_origenes)
+        print(self.num_destinos)
+        print(self.num_transbordos)
+        print(self.mat_costo)
+        print(self.mat_sombra)
+        print(self.mat_dec)
+        print(self.mat_base)
+        print(self.artificial)
+        print(self.u)
+        print(self.v)
+
     def solicitar_datos(self) -> None:
         """Esta función es para llenar los datos usados en el modelo.
         Se solicita mediante input en consola.
@@ -78,6 +97,14 @@ class Transporte():
         """
         print("Vamos a resolver un problemas de transporte.")
         try:
+            print("¿Que quieres hacer?")
+            print("Maximizar: ingresa 1")
+            print("Minimizar: ingresa 2")
+            o = input_int("")
+            if o == 1:
+                self.obj = Objetivo.MAXIMIZAR
+            elif o == 2:
+                self.obj = Objetivo.MINIMIZAR
 
             # Cantidad de orignes, destinos y transbordos.
             self.num_origenes = input_int(
@@ -88,9 +115,9 @@ class Transporte():
                 "¿Cuantos transbordos?\n(Si no tiene transbordo pon 0)")
 
             # Ofertas de cada origen y demandas de cada destino
-            for i in range(num_origenes):
+            for i in range(self.num_origenes):
                 self.oferta_origenes.append(
-                    input_int("¿Cuál es la oferta de tu origen #{}".format(i+1)))
+                    input_int("¿Cuál es la oferta de tu origen #{}: ".format(i+1)))
 
             self.oferta_transbordos = [
                 sum(self.oferta_origenes)]*self.num_transbordos
@@ -99,7 +126,7 @@ class Transporte():
             self.demanda_destinos += self.oferta_transbordos
             for i in range(self.num_destinos):
                 self.demanda_destinos.append(
-                    input_int("¿Cuál es la demanda de tu destino #{}".format(i+1)))
+                    input_int("¿Cuál es la demanda de tu destino #{}: ".format(i+1)))
 
 #             print(self.oferta_origenes, self.demanda_destinos)
 
@@ -116,10 +143,10 @@ class Transporte():
             for i in range(max_cant_conexiones):
                 fila = i//num_filas  # ORIGENES
                 col = i % num_cols  # DESTINOS
-                origen = "origen" if fila < num_origenes else "transbordo"
-                n_origen = fila+1 if fila < num_origenes else fila+1-num_origenes
-                destino = "transbordo" if col < num_transbordos else "destino"
-                n_destino = col+1 if col < num_transbordos else col+1-num_transbordos
+                origen = "origen" if fila < self.num_origenes else "transbordo"
+                n_origen = fila+1 if fila < self.num_origenes else fila+1-self.num_origenes
+                destino = "transbordo" if col < self.num_transbordos else "destino"
+                n_destino = col+1 if col < self.num_transbordos else col+1-self.num_transbordos
                 temp_val = input("Costo de {} #{} al {} #{} es:".format(
                     origen, n_origen, destino, n_destino))
                 # TODO: Validaciones de la entrada de costos
@@ -129,7 +156,7 @@ class Transporte():
 
                 self.mat_costo[i//num_filas].append(temp_val
                                                     )
-            if sum(oferta_origenes) > sum(demanda_destinos):
+            if sum(self.oferta_origenes) > sum(self.demanda_destinos):
                 self.artificial = Artificial.DESTINOS
                 self.demanda_destinos.append(
                     sum(self.oferta_origenes)-sum(self.demanda_destinos))
@@ -145,6 +172,14 @@ class Transporte():
             self.oferta_origenes = np.array(self.oferta_origenes)
             self.demanda_destinos = np.array(self.demanda_destinos)
             self.mat_costo = np.array(self.mat_costo)
+
+            max_costo = self.mat_costo.max()
+
+            self.mat_costo = np.where(
+                self.mat_costo == -1, max_costo + 1000, self.mat_costo)
+
+            # self.print_all_data()
+            # input()
 
         except ValueError:
             print("No entendí eso. :( Porfavor solo inserta valores numéricos")
@@ -358,7 +393,6 @@ class Transporte():
         return self.mat_dec, self.mat_base
 
     def costos_sombra(self) -> Tuple[np.ndarray, np.ndarray]:
-        import pdb
         self.u = np.array([0] + [None] * (len(self.oferta_origenes) - 1))
         self.v = np.array([None] * len(self.demanda_destinos))
 
@@ -370,9 +404,9 @@ class Transporte():
             for i in range(len(base[0])):
                 fila = base[0][i]
                 col = base[1][i]
-                if self.u[fila] and not self.v[col]:
+                if self.u[fila] is not None and self.v[col] is None:
                     self.v[col] = self.mat_costo[fila][col] - self.u[fila]
-                elif self.v[col]:
+                elif self.v[col] is not None and self.u[fila] is None:
                     self.u[fila] = self.mat_costo[fila][col] - self.v[col]
         self.mat_sombra = np.zeros(
             (len(self.u), len(self.v)))
@@ -386,65 +420,141 @@ class Transporte():
         return(self.mat_sombra)
 
     def encontrar_poligono(self):
-        max_sombra = self.mat_sombra.max()
-        pivote = (np.where(self.mat_sombra == max_sombra)[
-                  0][0], np.where(self.mat_sombra == max_sombra)[1][0])
+        sombra_piv = self.mat_sombra.max(
+        ) if self.obj == Objetivo.MINIMIZAR else self.mat_sombra.min()
+        pivote = (np.where(self.mat_sombra == sombra_piv)[
+                  0][0], np.where(self.mat_sombra == sombra_piv)[1][0])
 
         route = [pivote]
 
-        def look_col(mat_base: np.ndarray, route: Ruta) -> Tuple[bool, List]:
-            import pdb
-            pdb.set_trace()
-            base = mat_base.copy()
-            base[route[-1][0]][route[-1][1]] = False
-
-            col = route[-1][1]
-
-            posible_options = np.where(base[:, col])
-            for i in np.arange(len(posible_options[0])):
-                fila = posible_options[0][i]
-                if (fila, col) in route:
-                    if (fila, col) == route[0]:
-                        return True, route
-                    return False, route
-                else:
-                    return False, route.append((fila, col))
-            return False, route
-
-        def look_row(mat_base: np.ndarray, route: Ruta) -> Tuple[bool, Ruta]:
-            import pdb
-            pdb.set_trace()
+        def look_row(mat_base: np.ndarray, route: Ruta) -> Tuple[bool, List]:
+            # print("ruta", route)
             base = mat_base.copy()
             base[route[-1][0]][route[-1][1]] = False
             posible_options = np.where(base[route[-1][0], :])
             for i in np.arange(len(posible_options[0])):
-                fila = posible_options[0][i]
-                col = posible_options[1][i]
+                fila = route[-1][0]
+                col = posible_options[0][i]
                 if (fila, col) in route:
                     if (fila, col) == route[0]:
                         return True, route
                     return False, route
                 else:
-                    return False, route.append((fila, col))
+                    valid, route2 = look_col(base, route + [(fila, col)])
+                    if valid:
+                        return True, route2
             return False, route
-        counter = 0
-        while True and counter < 50:
-            valid, route = look_col(self.mat_base, route)
-            if(valid):
-                return route
-            valid, route = look_row(self.mat_base, route)
-            if(valid):
-                return route
-            counter += 1
 
-    def solve(self) -> None:
+        def look_col(mat_base: np.ndarray, route: Ruta) -> Tuple[bool, Ruta]:
+            # print("Ruta", route)
+            base = mat_base.copy()
+            base[route[-1][0]][route[-1][1]] = False
+            posible_options = np.where(base[:, route[-1][1]])
+            for i in np.arange(len(posible_options[0])):
+                fila = posible_options[0][i]
+                col = route[-1][1]
+                if (fila, col) in route:
+                    if (fila, col) == route[0]:
+                        return True, route
+                    return False, route
+                else:
+                    valid, route2 = look_row(base, route + [(fila, col)])
+                    if valid:
+                        return True, route2
+            return False, route
+
+        base = self.mat_base.copy()
+        base[pivote[0]][pivote[1]] = True
+        posible_options = np.where(base[:, route[-1][1]])
+        for i in np.arange(len(posible_options[0])):
+            current = (posible_options[0][i], route[-1][1])
+            valid, route = look_row(base, route + [current])
+
+            if valid:
+                if route[0] == route[1]:
+                    route.pop(1)
+                current_x = -1
+                current_y = -1
+                cont_x = 1
+                cont_y = 1
+                to_pop = []
+                for i in range(len(route)):
+                    if route[i][0] == current_x:
+                        cont_x += 1
+                    else:
+                        cont_x = 1
+                        current_x = route[i][0]
+
+                    if route[i][1] == current_y:
+                        cont_y += 1
+                    else:
+                        cont_y = 1
+                        current_y = route[i][1]
+                    if cont_x > 2 or cont_y > 2:
+                        to_pop += [i-1]
+                for i in to_pop:
+                    route.pop(i)
+                return np.array(route)
+
+    def decision_posicion(self, pos: Coord) -> float:
+        return self.mat_dec[pos[0]][pos[1]]
+
+    def pivotear(self):
+        ruta = self.encontrar_poligono()
+        values = np.apply_along_axis(self.decision_posicion, 1, ruta)
+        pivote = np.array([values[x] for x in range(1, len(values), 2)]).min()
+        pos_min = ruta[np.where(values == pivote)[0][0]]
+        self.mat_base[pos_min[0]][pos_min[1]] = False
+        self.mat_base[ruta[0][0]][ruta[0][1]] = True
+        # print(ruta)
+        for i in range(len(ruta)):
+            if i % 2 == 0:
+                self.mat_dec[ruta[i][0]][ruta[i][1]] += pivote
+            else:
+                self.mat_dec[ruta[i][0]][ruta[i][1]] -= pivote
+
+    def z(self):
+        return (self.mat_dec * self.mat_costo).sum()
+
+    def hay_mas_iteraciones(self):
+        if self.obj == Objetivo.MAXIMIZAR:
+            return self.mat_sombra.min() < 0
+        else:
+            return self.mat_sombra.max() > 0
+
+    def __init__(self) -> None:
         self.solicitar_datos()
-        self.noroeste()
+        # self.obj = Objetivo.MAXIMIZAR
+        # self.test_data(1)
+        print("¿Cuál metodo quieres usar para iniciar?")
+        print("Esquina Noroeste: ingresa 1")
+        print("Consto Mínimo: ingresa 2")
+        o = input_int("")
+        if o == 1:
+            self.noroeste()
+        elif o == 2:
+            self.costo_minimo()
+        print("Costo minimo")
+        print(self.mat_dec)
+
+        self.costos_sombra()
+        while self.hay_mas_iteraciones():
+            # print(transporte.mat_sombra.max())
+            self.pivotear()
+            self.costos_sombra()
+            print("Decision")
+            print(self.mat_dec)
+            print("Sombra")
+            print(self.mat_sombra)
+            print("Z = ", self.z())
+        print()
+        print("RESULTADO")
+        print("Decision")
+        print(self.mat_dec)
+        print("Sombra")
+        print(self.mat_sombra)
+        print("Z = ", self.z())
 
 
 if __name__ == "__main__":
     transporte = Transporte()
-    transporte.test_data(1)
-    transporte.costo_minimo()
-    transporte.costos_sombra()
-    print(transporte.encontrar_poligono())
