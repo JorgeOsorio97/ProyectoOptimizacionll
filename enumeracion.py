@@ -81,6 +81,7 @@ for j in range(len(rs)):
         np.array(sumrs)
         print (sumrs,'<=', condicional[j])
         
+        candidatos=np.all(sumrs <= condicional[j])
         lista_vacia.append(candidatos)
     print(lista_vacia)
     
