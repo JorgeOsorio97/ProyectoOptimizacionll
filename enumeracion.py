@@ -21,7 +21,7 @@ def enumeracion():
     print("¿Que quieres hacer?")
     print("Maximizar: ingresa 1")
     print("Minimizar: ingresa 2")
-    tipo = input("")
+    tipo = input_int("")
 
     variables = input_int("¿Cuantas variables tiene el problema?\n")
     res = input_int("¿Cuantas restricciones tiene el problema?\n")
@@ -79,18 +79,23 @@ def enumeracion():
         for l in range(len(rs[j])):
             sumrs = sum(rs[j][l])
             np.array(sumrs)
-            print(sumrs, '<=', condicional[j])
+            # print(sumrs, '<=', condicional[j])
 
             candidatos = np.all(sumrs <= condicional[j])
             lista_vacia.append(candidatos)
-        print(lista_vacia)
+        # print(lista_vacia)
 
     lista_vacia_grande = np.array(lista_vacia_grande)
     lista_vacia_grande = np.transpose(lista_vacia_grande)
 
+    for i in np.arange(len(lista_vacia_grande)):
+        print(binarios[i], lista_vacia_grande[i], sumz[i])
+
     lista_vacia2 = []
     for j in lista_vacia_grande:
         lista_vacia2.append(np.all(j == True))
+    import pdb
+    pdb.set_trace()
     maximo = sumz[lista_vacia2].max() if (
         tipo == 1) else sumz[lista_vacia2].min()
     print(maximo)

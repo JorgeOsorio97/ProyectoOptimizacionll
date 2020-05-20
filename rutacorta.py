@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 import pdb
 
 import numpy as np
@@ -32,10 +32,11 @@ class Conexion():
 
 class RutaCorta():
 
-    num_nodos = 0
-    conexiones = []
-    nodo_inicial = -1
-    nodo_final = -1
+    num_nodos: int = 0
+    nodos: np.ndarray = []
+    conexiones: List[Conexion] = []
+    nodo_inicial: int = -1
+    nodo_final: int = -1
 
     def solicitar_datos(self):
 
@@ -90,43 +91,71 @@ class RutaCorta():
                 Conexion(6, 7, 6),
             ]
 
-    @staticmethod
-    def crear_nodo_alcazado(nodo: int, previo: int, costo_total: int) -> Dict[str, Any]:
-        return({"nodo": nodo, "previo": previo, "costo": costo_total})
+    def crear_nodos(self,) -> None:
+        for i in np.arange(self.num_nodos):
+            self.nodos.append(
+                {"id": i, "desde": None, "costo": 0, "alcanzado": False})
+        self.nodos = np.array(self.nodos)
 
-    def continua_ruta(self, nodos_alcanzados, nodos_posibles) -> bool:
-        if all(x for x in nodos_alcanzados if x["nodo"] != self.nodo_final):
-            return False
-        final = next(
-            (nodo for nodo in nodos_alcanzados if nodo["nodo"] == self.nodo_final), None)
-        for i in [nodo for nodo in nodos_alcanzados if nodo["nodo"] == self.nodo_final]:
-            if i["costo"] < final["costo"]:
-                final = i
+    def continua_ruta(self) -> bool:
+        last = self.nodos[self.nodo_final]
+        if last["alcanzado"] == False:
+            return True
+
+        for i in [nodo for nodo in self.nodos if nodo["id"] != self.nodo_final]:
+            if i["costo"] < last["costo"]:
+                return True
+        return False
 
     def solve(self):
-        nodos_alcanzados = np.array([])
-        nodos_revisados = np.array([])
+        self.crear_nodos()
+        nodos_revisados = []
 
-        nodos_alcanzados = np.append(
-            nodos_alcanzados, RutaCorta.crear_nodo_alcazado(self.nodo_inicial, None, 0))
+        self.nodos[self.nodo_inicial]["alcanzado"] = True
 
         counter = 0
         while True:
-            pdb.set_trace()
-            nodos_posibles = np.array([])
-            for i in nodos_alcanzados[~np.isin(nodos_alcanzados, nodos_revisados)]:
+            # pdb.set_trace()
+            nodos_posibles = [
+                nodo for nodo in self.nodos if nodo["alcanzado"] == True and nodo["id"] not in nodos_revisados]
+            for i in nodos_posibles:
                 nuevas_conexiones = [
-                    conx for conx in self.conexiones if conx.desde == i["nodo"]]
+                    conx for conx in self.conexiones if conx.desde == i["id"]]
                 for conexion in nuevas_conexiones:
-                    print(conexion)
+                    # Nodo hacia el que llega la conexion
+                    hacia = self.nodos[conexion.hacia]
+                    desde = self.nodos[conexion.desde]
+                    nuevo_costo = desde["costo"] + conexion.costo
+                    if hacia["alcanzado"] == True:
+                        if nuevo_costo < hacia["costo"]:
+                            self.nodos[conexion.hacia]["desde"] = conexion.desde
+                            self.nodos[conexion.hacia]["costo"] = nuevo_costo
+                    else:
+                        self.nodos[conexion.hacia]["alcanzado"] = True
+                        self.nodos[conexion.hacia]["alcanzado"] = True
+                        self.nodos[conexion.hacia]["desde"] = conexion.desde
+                        self.nodos[conexion.hacia]["costo"] = nuevo_costo
+                nodos_revisados.append(i["id"])
 
             counter += 1
+            if not self.continua_ruta():
+                break
             if counter > self.num_nodos+1:
                 break
+
+        nodo = self.nodos[self.nodo_final]
+        str_ruta = "{}".format(nodo["id"]+1)
+        # pdb.set_trace()
+        while nodo["desde"] is not None:
+            str_ruta = "{} -> {}".format(nodo["desde"]+1, str_ruta)
+            nodo = self.nodos[nodo["desde"]]
+        print("La mejor ruta es: {}".format(str_ruta))
+        print("Y el costo es de: {}".format(
+            self.nodos[self.nodo_final]["costo"]))
 
 
 if __name__ == "__main__":
     ruta = RutaCorta()
-    # ruta.solicitar_datos()
-    ruta.test_data(1)
+    ruta.solicitar_datos()
+    # ruta.test_data(1)
     ruta.solve()

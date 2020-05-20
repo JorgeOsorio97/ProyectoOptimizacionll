@@ -1,6 +1,9 @@
 from enumeracion import enumeracion
 from transporte import Transporte
 from ramificacion import Ramificacion
+from rutacorta import RutaCorta
+from floyd import Floyd
+from arb_ex_min import arbol_exp_minima
 
 
 def input_int(message=""):
@@ -29,6 +32,9 @@ def main():
     print("1. Transporte")
     print("2. Ramificacion")
     print("3. Enumeracion")
+    print("4. Dijkstra")
+    print("5. Floyd")
+    print("6. Arbol de expansion minima")
     metodo = input_int("")
 
     if metodo == 1:
@@ -38,6 +44,18 @@ def main():
         ram.solve()
     elif metodo == 3:
         enumeracion()
+    elif metodo == 4:
+        ruta = RutaCorta()
+        ruta.solicitar_datos()
+        # ruta.test_data(1)
+        ruta.solve()
+    elif metodo == 5:
+        floyd = Floyd()
+        floyd.solicitar_datos()
+        # floyd.test_data(1)
+        floyd.solve()
+    elif 6:
+        arbol_exp_minima()
 
 
 if __name__ == "__main__":
