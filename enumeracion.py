@@ -68,39 +68,37 @@ def enumeracion():
 
     rs = np.array(divres*binarios)
 
-    sumz = [sum(z[i]) for i in range(len(z))]
-    sumz = np.array(sumz)
-    print(sumz)
+    valores_z = [sum(z[i]) for i in range(len(z))]
+    valores_z = np.array(valores_z)
+    print(valores_z)
 
-    lista_vacia_grande = []
+    lista_candidatos = []
     for j in range(len(rs)):
         lista_vacia = []
-        lista_vacia_grande.append(lista_vacia)
+        lista_candidatos.append(lista_vacia)
         for l in range(len(rs[j])):
             sumrs = sum(rs[j][l])
             np.array(sumrs)
-            # print(sumrs, '<=', condicional[j])
+            print(sumrs, '<=', condicional[j])
 
             candidatos = np.all(sumrs <= condicional[j])
             lista_vacia.append(candidatos)
         # print(lista_vacia)
 
-    lista_vacia_grande = np.array(lista_vacia_grande)
-    lista_vacia_grande = np.transpose(lista_vacia_grande)
+    lista_candidatos = np.array(lista_candidatos)
+    lista_candidatos = np.transpose(lista_candidatos)
 
-    for i in np.arange(len(lista_vacia_grande)):
-        print(binarios[i], lista_vacia_grande[i], sumz[i])
+    for i in np.arange(len(lista_candidatos)):
+        print(binarios[i], lista_candidatos[i], valores_z[i])
 
     lista_vacia2 = []
-    for j in lista_vacia_grande:
+    for j in lista_candidatos:
         lista_vacia2.append(np.all(j == True))
-    import pdb
-    pdb.set_trace()
-    maximo = sumz[lista_vacia2].max() if (
-        tipo == 1) else sumz[lista_vacia2].min()
+    maximo = valores_z[lista_vacia2].max() if (
+        tipo == 1) else valores_z[lista_vacia2].min()
     print(maximo)
 
-    index_max = np.where(sumz[lista_vacia2] == maximo)[0][0]
+    index_max = np.where(valores_z[lista_vacia2] == maximo)[0][0]
     print((binarios[lista_vacia2][index_max]))
 
 
