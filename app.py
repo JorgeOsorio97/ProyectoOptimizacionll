@@ -29,7 +29,7 @@ def main():
 
     print("Hola usuario.")
     print("¿Qué metodo quieres resolver hoy?")
-    print("1. Transporte")
+    print("1. Transporte - Transbordo")
     print("2. Ramificacion")
     print("3. Enumeracion")
     print("4. Dijkstra")
