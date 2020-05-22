@@ -48,9 +48,9 @@ class Transporte():
     num_destinos = 0
     num_transbordos = 0
     mat_costo = []
-    mat_dec = []
 
     # Variables calculadas
+    mat_dec = []
     mat_base = []
     artificial: Artificial = 0
     mat_sombra = []
@@ -518,9 +518,9 @@ class Transporte():
 
     def hay_mas_iteraciones(self):
         if self.obj == Objetivo.MAXIMIZAR:
-            return self.mat_sombra.min() < 0
+            return self.mat_sombra.min() <= 0
         else:
-            return self.mat_sombra.max() > 0
+            return self.mat_sombra.max() >= 0
 
     def __init__(self) -> None:
         self.solicitar_datos()
