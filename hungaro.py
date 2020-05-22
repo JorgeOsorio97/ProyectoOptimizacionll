@@ -53,19 +53,36 @@ def hungaro():
     print (matrix3)
     print("\n")
     
-
+    ceros_filas = []
     for f in range (len(matrix3)):
         lista_vacia=[]
         lista_taches=[]
         lista_taches.append(lista_vacia)
         for c in range (len(matrix3[f])):
-            candidatos=np.all(matrix3[f][c] == 0)
+            candidatos = matrix3[f][c] == 0
             lista_vacia.append(candidatos)
-            x=lista_vacia.count(True)
+        x=lista_vacia.count(True)
         lista_vacia=np.array(lista_vacia) 
-       
-        print (lista_vacia)
-        
+        ceros_filas.append(x)
+        print ("listavacia", lista_vacia)
+        print(x)
+    print(ceros_filas)
+
+    ceros_cols = []
+    for c in range(len(matrix3)):
+        lista_vacia=[]
+        lista_taches=[]
+        lista_taches.append(lista_vacia)
+        for f in range (len(matrix3[:,c])):
+            candidatos = matrix3[f][c] == 0
+            lista_vacia.append(candidatos)
+        x=lista_vacia.count(True)
+        lista_vacia=np.array(lista_vacia) 
+        ceros_cols.append(x)
+        print ("listavacia", lista_vacia)
+        print(x)
+    print(ceros_cols)
+    
         
 
 
