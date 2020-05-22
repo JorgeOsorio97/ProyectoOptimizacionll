@@ -20,7 +20,7 @@ def try_again():
 #         self.previous = previous
 
 
-class Conexion():
+class ConexionR():
     def __init__(self, desde, hacia, costo):
         self.desde = desde
         self.hacia = hacia
@@ -34,7 +34,7 @@ class RutaCorta():
 
     num_nodos: int = 0
     nodos: np.ndarray = []
-    conexiones: List[Conexion] = []
+    conexiones: List[ConexionR] = []
     nodo_inicial: int = -1
     nodo_final: int = -1
 
@@ -54,7 +54,7 @@ class RutaCorta():
                 if temp_conexion == "x" or temp_conexion == "X":
                     continue
                 temp_conexion = float(temp_conexion)
-                self.conexiones.append(Conexion(i, j, temp_conexion))
+                self.conexiones.append(ConexionR(i, j, temp_conexion))
         self.nodo_inicial = input_int("Dime en que nodo quieres iniciar: ") - 1
         self.nodo_final = input_int("Dime en que nodo quieres terminar: ") - 1
 
@@ -67,28 +67,28 @@ class RutaCorta():
             self.nodo_final = 7
             self.conexiones = [
                 # Nodo 2
-                Conexion(0, 1, 1),
+                ConexionR(0, 1, 1),
                 # Nodo 3
-                Conexion(0, 2, 2),
-                Conexion(1, 2, 1),
+                ConexionR(0, 2, 2),
+                ConexionR(1, 2, 1),
                 # Nodo 4
-                Conexion(1, 3, 5),
-                Conexion(2, 3, 2),
+                ConexionR(1, 3, 5),
+                ConexionR(2, 3, 2),
                 # Nodo 5
-                Conexion(1, 4, 2),
-                Conexion(2, 4, 1),
-                Conexion(3, 4, 3),
+                ConexionR(1, 4, 2),
+                ConexionR(2, 4, 1),
+                ConexionR(3, 4, 3),
                 # Nodo 6
-                Conexion(2, 5, 4),
-                Conexion(3, 5, 6),
-                Conexion(4, 5, 3),
+                ConexionR(2, 5, 4),
+                ConexionR(3, 5, 6),
+                ConexionR(4, 5, 3),
                 # Nodo 7
-                Conexion(3, 6, 8),
-                Conexion(4, 6, 7),
-                Conexion(5, 6, 5),
+                ConexionR(3, 6, 8),
+                ConexionR(4, 6, 7),
+                ConexionR(5, 6, 5),
                 # Nodo 8
-                Conexion(5, 7, 2),
-                Conexion(6, 7, 6),
+                ConexionR(5, 7, 2),
+                ConexionR(6, 7, 6),
             ]
 
     def crear_nodos(self,) -> None:
