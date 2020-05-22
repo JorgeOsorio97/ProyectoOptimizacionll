@@ -238,7 +238,7 @@ class Ramificacion():
     @staticmethod
     def is_integer_solution(x: np.ndarray) -> Tuple[bool, int]:
         # pdb.set_trace()
-        if len(x) < 0:
+        if len(x) <= 0:
             return False
         for i in np.arange(len(x)):
             if int(x[i]) != x[i]:
