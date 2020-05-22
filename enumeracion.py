@@ -55,11 +55,7 @@ def enumeracion():
     funobj = np.array(funobj)
     restricciones = np.array(restricciones)
     condicional = np.array(condicional)
-    print('Max Z=', funobj, '\n')
-    print('s.a\n')
-
-    print(restricciones, condicional)
-
+   
     binarios = np.array(list(it.product([0, 1], repeat=variables)))
 
     z = np.array(funobj*binarios)
