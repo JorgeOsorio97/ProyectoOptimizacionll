@@ -52,7 +52,7 @@ def hungaro():
     matrix3=matrix21-minimo2;
     print (matrix3)
     print("\n")
-
+    
 
     for f in range (len(matrix3)):
         lista_vacia=[]
