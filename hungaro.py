@@ -83,6 +83,8 @@ def hungaro():
         print(x)
     print(ceros_cols)
     
+    numero_cortes=[]
+    
         
 
 
