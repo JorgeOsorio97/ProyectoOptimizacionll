@@ -190,10 +190,11 @@ def simplex_redes():
             flujo=flujo + int(nodo_ofe_dem[i])
             if (flujo>=0):
 
-                for j in range(int(nodos_hojas_raices[i,0])-1):
-                    aristas_temporales.append(int(flujo/nodos_hojas_raices[i,0]))
-                aristas_temporales.append(int(flujo/nodos_hojas_raices[i,0])+flujo%nodos_hojas_raices[i,0])
-                ar=0
+                if(nodos_hojas_raices[i,0]!=0):
+                    for j in range(int(nodos_hojas_raices[i,0])-1):
+                        aristas_temporales.append(int(flujo/nodos_hojas_raices[i,0]))
+                    aristas_temporales.append(int(flujo/nodos_hojas_raices[i,0])+flujo%nodos_hojas_raices[i,0])
+                    ar=0
                 for k in range(num_nodos):
                     if(red_iteracion_c[i,k] != 10**8):
                         
