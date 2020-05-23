@@ -285,7 +285,7 @@ class Ramificacion():
         self.test_branch(branch)
         z = self.z() if self.obj == Objetivo.MINIMIZAR else -self.z()
         print("Los valores para x son {}".format(self.x))
-        print("Z={}".format(self.z))
+        print("Z={}".format(self.z()))
         return self.x, self.z()
 
 
