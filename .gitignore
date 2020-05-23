@@ -65,3 +65,5 @@ scratch/
 
 # IDE's
 .vscode/
+
+output/
