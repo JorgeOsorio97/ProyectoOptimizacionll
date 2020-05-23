@@ -83,7 +83,10 @@ def hungaro():
         print(x)
     print(ceros_cols)
     
-    numero_cortes=[]
+    asignaciones=[]
+    for j in lista_vacia:
+        asignaciones.append(np.all(j == True))
+    print()
     
         
 

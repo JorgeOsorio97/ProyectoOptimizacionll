@@ -92,9 +92,10 @@ def enumeracion():
         lista_vacia2.append(np.all(j == True))
     maximo = valores_z[lista_vacia2].max() if (
         tipo == 1) else valores_z[lista_vacia2].min()
-    print(maximo)
+    print("Z= ", maximo)
 
     index_max = np.where(valores_z[lista_vacia2] == maximo)[0][0]
+    print("El vector de solucion es: \n")
     print((binarios[lista_vacia2][index_max]))
 
 
