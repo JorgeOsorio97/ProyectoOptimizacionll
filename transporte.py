@@ -1,5 +1,5 @@
 # Std library
-import itertools
+import itertools as it
 from typing import Tuple, List
 from enum import Enum, unique
 
@@ -128,7 +128,7 @@ class Transporte():
                 self.demanda_destinos.append(
                     input_int("¿Cuál es la demanda de tu destino #{}: ".format(i+1)))
 
-#             print(self.oferta_origenes, self.demanda_destinos)
+            # print(self.oferta_origenes, self.demanda_destinos)
 
             # Matriz de costos
             print("Excelente ahora llenemos la matriz de costos.")
@@ -289,7 +289,7 @@ class Transporte():
             current = min(ofertas[origenes_disponibles]
                           [fila], demandas[destinos_disponibles][col])
 
-            campos_disponibles = [x[0] and x[1] for x in itertools.product(
+            campos_disponibles = [x[0] and x[1] for x in it.product(
                 origenes_disponibles, destinos_disponibles)]
             campos_disponibles = np.array(campos_disponibles).reshape(
                 len(ofertas), len(demandas))
@@ -330,7 +330,7 @@ class Transporte():
             current = min(ofertas[origenes_disponibles][fila],
                           demandas[destinos_disponibles][transbordos:][col])
 
-            campos_disponibles = [x[0] and x[1] for x in itertools.product(
+            campos_disponibles = [x[0] and x[1] for x in it.product(
                 origenes_disponibles, destinos_disponibles)]
             campos_disponibles = np.array(campos_disponibles).reshape(
                 len(ofertas), len(demandas))
@@ -366,7 +366,7 @@ class Transporte():
             current = min(ofertas[origenes_disponibles]
                           [fila], demandas[destinos_disponibles][col])
 
-            campos_disponibles = [x[0] and x[1] for x in itertools.product(
+            campos_disponibles = [x[0] and x[1] for x in it.product(
                 origenes_disponibles, destinos_disponibles)]
             campos_disponibles = np.array(campos_disponibles).reshape(
                 len(ofertas), len(demandas))

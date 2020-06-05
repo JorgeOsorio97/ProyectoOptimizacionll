@@ -131,7 +131,7 @@ def simplex_redes():
 
                     
     
-    red_minima=metodo2(red_iteracion_c, aristas_c)
+    red_minima=metodo3(red_iteracion_c, aristas_c)
     
     
     for i in range(num_nodos):
@@ -437,7 +437,7 @@ def simplex_redes():
 
 
 
-def metodo2(matriz, lista_modificaciones):
+def metodo3(matriz, lista_modificaciones):
     print("Metodo del arbol de expansion minima")
     #print(matriz)
     

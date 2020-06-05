@@ -61,9 +61,8 @@ class Floyd():
                 temp_conexion = float(temp_conexion)
                 self.conexiones[i].append(temp_conexion)
 
-        self.conexiones = np.array(self.conexiones)
+        # self.conexiones = np.array(self.conexiones)
 
-        costo_maximo = self.conexiones.max()
         for i in conexiones_M:
             self.conexiones[i[0]][i[1]] = None
 
@@ -101,7 +100,7 @@ class Floyd():
         print(self.mat_dec)
 
         for k in np.arange(self.num_nodos):
-
+            import pdb; pdb.set_trace()
             for i in list_nodos[list_nodos != k]:
                 for j in list_nodos[list_nodos != k]:
                     if i == j:
